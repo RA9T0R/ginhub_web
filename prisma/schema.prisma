@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+enum Role {
+  CUSTOMER
+  RESTAURANT
+}
+
+enum OrderStatus {
+  PENDING
+  PREPARING
+  DELIVERED
+  CANCELLED
+}
+
+model User {
+  id       String @id @default(cuid())
+  email    String @unique
+  password String
+  name     String
+  role     Role   @default(CUSTOMER)
+
+  address String?
+  phone   String?
+
+  restaurants Restaurant[]
+  orders      Order[]
+
+  createdAt DateTime @default(now())
+}
+
+model Restaurant {
+  id          String  @id @default(cuid())
+  name        String
+  category    String  @default("ตามสั่ง")
+  description String?
+  imageUrl    String?
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id])
+
+  menus  Menu[]
+  orders Order[]
+
+  createdAt DateTime @default(now())
+}
+
+model Menu {
+  id          String  @id @default(cuid())
+  name        String
+  price       Float
+  imageUrl    String?
+  isAvailable Boolean @default(true)
+
+  restaurantId   String
+  restaurantName String
+  restaurant     Restaurant @relation(fields: [restaurantId], references: [id])
+
+  orderItems OrderItem[]
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  totalAmount Float
+  status      OrderStatus @default(PENDING)
+
+  customerId String
+  customer   User   @relation(fields: [customerId], references: [id])
+
+  restaurantId   String
+  restaurantName String
+  restaurant     Restaurant @relation(fields: [restaurantId], references: [id])
+
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+}
+
+model OrderItem {
+  id       String  @id @default(cuid())
+  quantity Int
+  price    Float
+  imageUrl String?
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  menuId String
+  menu   Menu   @relation(fields: [menuId], references: [id])
+}

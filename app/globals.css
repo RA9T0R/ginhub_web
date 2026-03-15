@@ -1,0 +1,56 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    /* ------------------------------------------------------------------- */
+    /* LIGHT MODE VARIABLES (Fresh & Appetizing) */
+    /* ------------------------------------------------------------------- */
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    /* BACKGROUNDS & NEUTRALS */
+    --color-Main_BG: #f1f1f1;    /* พื้นหลังหลัก (เทาอ่อนมากๆ ดูสะอาดตา) */
+    --color-BG_light: #ffffff;   /* พื้นหลังการ์ดหรือ Navbar (ขาวล้วน) */
+    --color-BG_dark: #e8e8e8;    /* พื้นหลังส่วนขอบ หรือตอน Hover */
+    --color-subtext: #6B7280;    /* สีตัวหนังสือรอง (เทากลาง) */
+    --color-Text: #111827;       /* สีตัวหนังสือหลัก (ดำอมเทา อ่านสบายตา) */
+
+    /* BRAND COLORS (Food & Energy) */
+    --color-primary: #EA580C;    /* สีส้มหลัก (GINHUB Orange - กระตุ้นความหิว) */
+    --color-secondary: #F59E0B;  /* สีเหลืองอำพัน (สำหรับดาวรีวิว เมนูยอดฮิต) */
+    --color-power: #10B981;      /* สีเขียว (สำหรับสถานะ 'จัดส่งสำเร็จ' หรือปุ่มยืนยัน) */
+
+    /* ------------------------------------------------------------------- */
+    /* DARK MODE VARIABLES (Modern & Premium Zinc) */
+    /* ------------------------------------------------------------------- */
+    --color-Dark_Main_BG: #18181B;   /* พื้นหลังหลักโหมดมืด (Zinc 900 ดูแพง) */
+    --color-Dark_BG_light: #27272A;  /* การ์ดในโหมดมืด (Zinc 800) */
+    --color-Dark_BG_dark: #09090B;   /* พื้นหลังที่มืดที่สุด สำหรับ Sidebar (Zinc 950) */
+    --color-Dark_subtext: #A1A1AA;   /* สีตัวหนังสือรองโหมดมืด */
+    --color-Dark_Text: #F4F4F5;      /* สีตัวหนังสือหลักโหมดมืด (ขาวอมเทา) */
+
+    /* BRAND COLORS (Adjusted for Dark Mode contrast) */
+    --color-Dark_primary: #F97316;   /* สีส้มสว่างขึ้นเล็กน้อย เพื่อให้ตัดกับพื้นดำ */
+    --color-Dark_secondary: #FBBF24; /* สีเหลืองสว่างขึ้น */
+    --color-Dark_power: #34D399;     /* สีเขียวสว่างขึ้น สบายตาในที่มืด */
+
+    --font-space-grotesk: var(--font-space-grotesk);
+}
+
+@layer utilities {
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
+
+@layer components{
+    .select_role_card{
+        @apply flex-1 bg-BG_light dark:bg-Dark_BG_light p-8 rounded-2xl shadow-sm hover:shadow-lg shadow-subtext dark:shadow-Dark_subtext transition-shadow text-center
+    }
+}
