@@ -4,11 +4,12 @@ import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { X, Loader2 } from 'lucide-react';
 import { registerUser } from '@/app/actions/auth';
+import { Role } from '@prisma/client';
 
 interface AuthModalProps {
     isOpen: boolean;
     onClose: () => void;
-    role: 'CUSTOMER' | 'RESTAURANT';
+    role: Role;
 }
 
 export default function AuthModal({ isOpen, onClose, role }: AuthModalProps) {
@@ -29,7 +30,7 @@ export default function AuthModal({ isOpen, onClose, role }: AuthModalProps) {
         setIsLoading(true);
         setError('');
 
-        const redirectUrl = role === 'RESTAURANT' ? '/dashboard' : '/restaurants';
+        const redirectUrl = role === 'RESTAURANT' ? '/dashboard' : (role === 'DELIVERY' ? '/rider' : '/restaurants');
 
         if (isLoginMode) {
             const result = await signIn('credentials', {
@@ -71,7 +72,9 @@ export default function AuthModal({ isOpen, onClose, role }: AuthModalProps) {
     const themeColor = role === 'RESTAURANT' ? 'bg-power hover:bg-power/80' : 'bg-primary hover:bg-orange-600';
     const titleText = role === 'RESTAURANT'
         ? (isLoginMode ? 'เข้าสู่ระบบร้านอาหาร' : 'สมัครเปิดร้านอาหาร')
-        : (isLoginMode ? 'เข้าสู่ระบบลูกค้า' : 'สมัครสมาชิกใหม่');
+        : role === 'DELIVERY'
+            ? (isLoginMode ? 'เข้าสู่ระบบไรเดอร์' : 'สมัครเป็นไรเดอร์')
+            : (isLoginMode ? 'เข้าสู่ระบบลูกค้า' : 'สมัครสมาชิกใหม่');
 
     const toggleMode = () => {
         setIsLoginMode(!isLoginMode);
@@ -187,7 +190,7 @@ export default function AuthModal({ isOpen, onClose, role }: AuthModalProps) {
                         <button
                             type="button"
                             onClick={() => {
-                                setEmail(role === 'RESTAURANT' ? 'owner1@ginhub.com' : 'somchai@customer.com');
+                                setEmail(role === 'RESTAURANT' ? 'owner1@ginhub.com' : role === 'DELIVERY' ? 'rider1@ginhub.com' : 'somchai@customer.com');
                                 setPassword('password123');
                             }}
                             className="text-[10px] font-bold text-gray-400 hover:text-primary transition-colors"

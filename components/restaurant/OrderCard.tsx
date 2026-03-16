@@ -2,8 +2,9 @@
 
 import React, { useTransition } from 'react';
 import { updateOrderStatus } from '@/app/actions/restaurant';
-import { Clock, ChefHat, CheckCircle2, XCircle, Loader2, MapPin, Phone, User } from 'lucide-react';
+import { Clock, ChefHat, CheckCircle2, XCircle, Loader2, MapPin, Phone, User, Package, Bike } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { OrderStatus } from '@prisma/client';
 
 interface OrderCardProps {
     order: any;
@@ -12,13 +13,13 @@ interface OrderCardProps {
 const OrderCard = ({ order }: OrderCardProps) => {
     const [isPending, startTransition] = useTransition();
 
-    const handleUpdateStatus = (newStatus: string) => {
+    const handleUpdateStatus = (newStatus: OrderStatus) => {
         startTransition(async () => {
             const result = await updateOrderStatus(order.id, newStatus);
 
             if (result.success) {
                 if (newStatus === 'PREPARING') toast.success('รับออร์เดอร์แล้ว! ลุยเลย 🧑‍🍳');
-                if (newStatus === 'DELIVERED') toast.success('จัดส่งสำเร็จ ยอดเยี่ยมมาก! 🛵');
+                if (newStatus === 'READY_FOR_PICKUP') toast.success('อาหารเสร็จแล้ว! รอไรเดอร์มารับ 🛍️');
                 if (newStatus === 'CANCELLED') toast.error('ยกเลิกออร์เดอร์แล้ว ❌');
             } else {
                 toast.error(result.message || 'เกิดข้อผิดพลาด');
@@ -29,11 +30,13 @@ const OrderCard = ({ order }: OrderCardProps) => {
     const statusConfig = {
         PENDING: { color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-500', icon: Clock, label: 'รอรับออร์เดอร์' },
         PREPARING: { color: 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-500', icon: ChefHat, label: 'กำลังทำอาหาร' },
+        READY_FOR_PICKUP: { color: 'bg-orange-100 text-orange-800 dark:bg-orange-500/20 dark:text-orange-500', icon: Package, label: 'รอไรเดอร์มารับ' },
+        PICKED_UP: { color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/20 dark:text-indigo-500', icon: Bike, label: 'ไรเดอร์กำลังไปส่ง' },
         DELIVERED: { color: 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-500', icon: CheckCircle2, label: 'จัดส่งสำเร็จ' },
         CANCELLED: { color: 'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-500', icon: XCircle, label: 'ยกเลิกแล้ว' },
     };
 
-    const currentStatus = statusConfig[order.status as keyof typeof statusConfig];
+    const currentStatus = statusConfig[order.status as keyof typeof statusConfig] || statusConfig['PENDING'];
     const StatusIcon = currentStatus.icon;
 
     return (
@@ -70,7 +73,6 @@ const OrderCard = ({ order }: OrderCardProps) => {
                     <p className="text-xs font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-wider">รายการอาหาร</p>
                     {order.items.map((item: any) => (
                         <div key={item.id} className="flex gap-4 items-center p-2 hover:bg-gray-50 dark:hover:bg-zinc-950 rounded-xl transition-colors">
-                            {/* ขยายขนาดรูปจาก size-8 เป็น size-14 (56x56px) */}
                             <div className="size-14 rounded-lg bg-gray-200 dark:bg-zinc-800 overflow-hidden shrink-0 shadow-sm border border-gray-100 dark:border-zinc-700">
                                 <img
                                     src={item.imageUrl || item.menu.imageUrl || 'https://via.placeholder.com/150'}
@@ -125,12 +127,24 @@ const OrderCard = ({ order }: OrderCardProps) => {
 
                     {order.status === 'PREPARING' && (
                         <button
-                            onClick={() => handleUpdateStatus('DELIVERED')}
+                            onClick={() => handleUpdateStatus('READY_FOR_PICKUP')}
                             disabled={isPending}
                             className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
                         >
-                            <CheckCircle2 size={18} /> ส่งอาหารแล้ว
+                            <Package size={18} /> อาหารเสร็จแล้ว
                         </button>
+                    )}
+
+                    {order.status === 'READY_FOR_PICKUP' && (
+                        <div className="w-full bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-500 font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 border border-orange-200 dark:border-orange-500/30 text-center">
+                            รอไรเดอร์มารับ...
+                        </div>
+                    )}
+
+                    {order.status === 'PICKED_UP' && (
+                        <div className="w-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-500 font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 border border-indigo-200 dark:border-indigo-500/30 text-center">
+                            <Bike size={18} /> ไรเดอร์รับไปแล้ว
+                        </div>
                     )}
                 </div>
             </div>

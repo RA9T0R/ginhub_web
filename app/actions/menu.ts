@@ -2,6 +2,8 @@
 
 import { PrismaClient } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
 
@@ -32,6 +34,11 @@ export const toggleMenuAvailability = async (menuId: string, isAvailable: boolea
 
 export const deleteMenu = async (menuId: string) => {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session || session.user.role !== 'RESTAURANT') {
+            return { success: false, message: 'ไม่มีสิทธิ์ใช้งานส่วนนี้' };
+        }
+
         await prisma.menu.delete({ where: { id: menuId } });
         revalidatePath('/dashboard/menus');
         return { success: true };

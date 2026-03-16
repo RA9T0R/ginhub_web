@@ -1,10 +1,19 @@
 import { LayoutDashboard, ListOrdered, Utensils } from 'lucide-react';
+import { Home, Wallet, ClockFading, User } from 'lucide-react';
 
 export const sidebarMenu = [
     { name: 'ภาพรวม (Dashboard)', path: '/dashboard', icon: LayoutDashboard },
     { name: 'ออร์เดอร์ลูกค้า', path: '/dashboard/orders', icon: ListOrdered },
     { name: 'จัดการเมนูอาหาร', path: '/dashboard/menus', icon: Utensils },
 ];
+
+export const navItems = [
+    { name: 'หน้าหลัก', path: '/rider', icon: Home },
+    { name: 'รายได้', path: '/rider/wallet', icon: Wallet },
+    { name: 'ประวัติ', path: '/rider/history', icon: ClockFading },
+    { name: 'โปรไฟล์', path: '/rider/profile', icon: User },
+];
+
 
 export interface CategoryType {
     id: number;

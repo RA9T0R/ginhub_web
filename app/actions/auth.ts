@@ -5,47 +5,29 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-export const registerUser = async (data: {
-    name: string;
-    email: string;
-    password: string;
-    role: Role;
-    secretKey?: string;
-}) => {
+export const registerUser = async (data: { name: string; email: string; password: string; role: Role; secretKey?: string; }) => {
     try {
-        const existingUser = await prisma.user.findUnique({
-            where: { email: data.email }
-        });
-
-        if (existingUser) {
-            return { success: false, message: 'อีเมลนี้ถูกใช้งานแล้ว' };
-        }
+        const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
+        if (existingUser) return { success: false, message: 'อีเมลนี้ถูกใช้งานแล้ว' };
 
         if (data.role === 'RESTAURANT') {
-            const validSecret = process.env.RESTAURANT_SECRET_KEY;
-            if (!data.secretKey || data.secretKey !== validSecret) {
-                return { success: false, message: 'รหัสลับสำหรับร้านค้าไม่ถูกต้อง!' };
-            }
+            const validSecret = process.env.RESTAURANT_SECRET_KEY || 'GINHUB2024';
+            if (!data.secretKey || data.secretKey !== validSecret) return { success: false, message: 'รหัสลับสำหรับร้านค้าไม่ถูกต้อง!' };
         }
 
         const hashedPassword = await bcrypt.hash(data.password, 10);
 
         const newUser = await prisma.user.create({
-            data: {
-                name: data.name,
-                email: data.email,
-                password: hashedPassword,
-                role: data.role
-            }
+            data: { name: data.name, email: data.email, password: hashedPassword, role: data.role }
         });
 
-        if (data.role === 'RESTAURANT') {
+        if (data.role === 'CUSTOMER') {
+            await prisma.customer.create({ data: { userId: newUser.id } });
+        } else if (data.role === 'DELIVERY') {
+            await prisma.deliveryPersonnel.create({ data: { userId: newUser.id } });
+        } else if (data.role === 'RESTAURANT') {
             await prisma.restaurant.create({
-                data: {
-                    name: `ร้านของ ${data.name}`,
-                    category: 'ทั่วไป',
-                    ownerId: newUser.id
-                }
+                data: { name: `ร้านของ ${data.name}`, category: 'ตามสั่ง', ownerId: newUser.id }
             });
         }
 

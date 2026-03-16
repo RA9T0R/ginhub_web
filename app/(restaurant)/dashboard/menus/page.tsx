@@ -11,7 +11,6 @@ const prisma = new PrismaClient();
 const DashboardMenusPage = async () => {
     const session = await getServerSession(authOptions);
 
-    // เช็คความปลอดภัย
     if (!session || session.user.role !== 'RESTAURANT') {
         redirect('/');
     }

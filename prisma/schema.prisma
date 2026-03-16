@@ -10,15 +10,21 @@ datasource db {
 enum Role {
   CUSTOMER
   RESTAURANT
+  DELIVERY
 }
 
 enum OrderStatus {
   PENDING
   PREPARING
+  READY_FOR_PICKUP
+  PICKED_UP
   DELIVERED
   CANCELLED
 }
 
+// ----------------------------------------------------
+// 1. Core User Table (ใช้สำหรับ Login และข้อมูลพื้นฐานเท่านั้น)
+// ----------------------------------------------------
 model User {
   id       String @id @default(cuid())
   email    String @unique
@@ -26,21 +32,63 @@ model User {
   name     String
   role     Role   @default(CUSTOMER)
 
-  address String?
-  phone   String?
-
-  restaurants Restaurant[]
-  orders      Order[]
+  // ความสัมพันธ์ 1-to-1 ไปยัง Profile ต่างๆ
+  customerProfile Customer? // ถ้าเป็นลูกค้า จะมีข้อมูลในตารางนี้
+  riderProfile    DeliveryPersonnel? // ถ้าเป็นไรเดอร์ จะมีข้อมูลในตารางนี้
+  restaurants     Restaurant[] // ถ้าเป็นร้านอาหาร จะเป็นเจ้าของร้านได้หลายร้าน
 
   createdAt DateTime @default(now())
 }
 
+// ----------------------------------------------------
+// 2. Customer Table (ข้อมูลเฉพาะของลูกค้า ตรงตาม ER Diagram)
+// ----------------------------------------------------
+model Customer {
+  id          String    @id @default(cuid())
+  phone       String?
+  address     String?
+  dateOfBirth DateTime? // อิงจาก ER Diagram
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+}
+
+// ----------------------------------------------------
+// 3. Delivery Personnel Table (ข้อมูลเฉพาะของไรเดอร์ ตรงตาม ER Diagram)
+// ----------------------------------------------------
+model DeliveryPersonnel {
+  id               String    @id @default(cuid())
+  phone            String?
+  licensePlate     String? // ป้ายทะเบียนรถ
+  identificationNo String? // เลขบัตรประชาชน (อิงจาก ER Diagram)
+  dateOfBirth      DateTime? // อิงจาก ER Diagram
+
+  driverScore    Float @default(100.0)
+  acceptanceRate Float @default(100.0)
+  balance        Float @default(0.0)
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+}
+
+// ----------------------------------------------------
+// 4. Restaurant Table (ตรงตาม ER Diagram)
+// ----------------------------------------------------
 model Restaurant {
   id          String  @id @default(cuid())
   name        String
   category    String  @default("ตามสั่ง")
   description String?
   imageUrl    String?
+  rating      Float   @default(0.0)
 
   ownerId String
   owner   User   @relation(fields: [ownerId], references: [id])
@@ -60,22 +108,33 @@ model Menu {
 
   restaurantId   String
   restaurantName String
-  restaurant     Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurant     Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   orderItems OrderItem[]
 }
 
+// ----------------------------------------------------
+// 5. Order & OrderItem Table
+// ----------------------------------------------------
 model Order {
   id          String      @id @default(cuid())
   totalAmount Float
+  deliveryFee Float       @default(15.0)
   status      OrderStatus @default(PENDING)
+  orderRating Int?
 
+  // ออร์เดอร์นี้เป็นของลูกค้าคนไหน (เปลี่ยนมาผูกกับ Customer แทน User)
   customerId String
-  customer   User   @relation(fields: [customerId], references: [id])
+  customer   Customer @relation(fields: [customerId], references: [id])
 
+  // ออร์เดอร์นี้สั่งจากร้านไหน
   restaurantId   String
   restaurantName String
   restaurant     Restaurant @relation(fields: [restaurantId], references: [id])
+
+  // ออร์เดอร์นี้ใครเป็นคนส่ง (เปลี่ยนมาผูกกับ DeliveryPersonnel แทน User)
+  riderId String?
+  rider   DeliveryPersonnel? @relation(fields: [riderId], references: [id])
 
   items OrderItem[]
 
@@ -89,7 +148,7 @@ model OrderItem {
   imageUrl String?
 
   orderId String
-  order   Order  @relation(fields: [orderId], references: [id])
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   menuId String
   menu   Menu   @relation(fields: [menuId], references: [id])

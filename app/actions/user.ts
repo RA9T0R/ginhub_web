@@ -12,9 +12,18 @@ export const getUserProfile = async () => {
 
     const user = await prisma.user.findUnique({
         where: { id: session.user.id },
-        select: { name: true, email: true, phone: true, address: true }
+        include: { customerProfile: true, riderProfile: true }
     });
-    return user;
+
+    if (!user) return null;
+
+    return {
+        name: user.name,
+        email: user.email,
+        phone: user.customerProfile?.phone || user.riderProfile?.phone || '',
+        address: user.customerProfile?.address || '',
+        licensePlate: user.riderProfile?.licensePlate || ''
+    };
 };
 
 export const updateUserProfile = async (data: { name: string, phone: string, address: string }) => {
@@ -24,12 +33,15 @@ export const updateUserProfile = async (data: { name: string, phone: string, add
 
         await prisma.user.update({
             where: { id: session.user.id },
-            data: {
-                name: data.name,
-                phone: data.phone,
-                address: data.address
-            }
+            data: { name: data.name }
         });
+
+        if (session.user.role === 'CUSTOMER') {
+            await prisma.customer.update({
+                where: { userId: session.user.id },
+                data: { phone: data.phone, address: data.address }
+            });
+        }
 
         return { success: true, message: 'อัปเดตข้อมูลสำเร็จ!' };
     } catch (error) {
