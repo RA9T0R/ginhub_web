@@ -4,11 +4,15 @@ import PromoBanner from '@/components/customer/PromoBanner';
 import CategorySlider from '@/components/customer/CategorySlider';
 import RestaurantCard from '@/components/customer/RestaurantCard';
 import { SearchX } from 'lucide-react';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
 
 const RestaurantsPage = async ({ searchParams }: { searchParams: Promise<{ category?: string, search?: string }> }) => {
     const { category, search } = await searchParams;
+
+    const session = await getServerSession(authOptions);
 
     const whereCondition: any = {};
 
@@ -24,25 +28,42 @@ const RestaurantsPage = async ({ searchParams }: { searchParams: Promise<{ categ
         ];
     }
 
-    // ดึงข้อมูลจากฐานข้อมูลตามเงื่อนไข
     const restaurants = await prisma.restaurant.findMany({
         where: whereCondition,
         include: { menus: true }
     });
 
+    let favIds: string[] = [];
+    if (session && session.user.role === 'CUSTOMER') {
+        const customer = await prisma.customer.findUnique({
+            where: { userId: session.user.id },
+            include: { favoriteRestaurants: { select: { id: true } } }
+        });
+
+        if (customer) {
+            favIds = customer.favoriteRestaurants.map(r => r.id);
+        }
+    }
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 pb-10">
             <PromoBanner />
             <CategorySlider activeCategory={category} />
 
             <div>
-                <h3 className="text-xl font-bold mb-4">
+                <h3 className="text-xl font-bold mb-4 text-Text dark:text-Dark_Text">
                     {search ? `ผลการค้นหา "${search}" 🔍` : category ? `ร้านอาหารในหมวด "${category}"` : 'ร้านอาหารแนะนำ ✨'}
                 </h3>
 
                 {restaurants.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {restaurants.map((res) => <RestaurantCard key={res.id} restaurant={res} />)}
+                        {restaurants.map((res) => (
+                            <RestaurantCard
+                                key={res.id}
+                                restaurant={res}
+                                isFavorited={favIds.includes(res.id)}
+                            />
+                        ))}
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-20 bg-BG_light dark:bg-Dark_BG_light rounded-2xl border border-gray-100 dark:border-zinc-800 text-center px-4">

@@ -52,7 +52,8 @@ model Customer {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  orders Order[]
+  orders              Order[]
+  favoriteRestaurants Restaurant[] @relation("CustomerFavorites")
 
   createdAt DateTime @default(now())
 }
@@ -95,6 +96,8 @@ model Restaurant {
 
   menus  Menu[]
   orders Order[]
+
+  favoritedBy Customer[] @relation("CustomerFavorites")
 
   createdAt DateTime @default(now())
 }

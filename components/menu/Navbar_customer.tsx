@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import ThemeToggle from "@/components/ThemeToggle";
-import { MapPin, Search, User, ShoppingCart, ReceiptText, LogOut } from 'lucide-react';
+import { MapPin, Search, User, ShoppingCart, ReceiptText, LogOut, Heart } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
@@ -88,9 +88,15 @@ const Navbar_customer = ({ onLoginClick }: { onLoginClick: () => void }) => {
                     </form>
 
                     <div className="flex items-center gap-2 md:gap-4">
+
+                        <Link href="/favorites" className="hidden md:flex items-center gap-2 text-subtext dark:text-Dark_subtext hover:text-red-500 dark:hover:text-red-500 font-medium text-sm transition-colors">
+                            <Heart size={20} /> <span className="hidden lg:inline">ร้านโปรด</span>
+                        </Link>
+
                         <Link href="/orders" className="hidden md:flex items-center gap-2 text-subtext dark:text-Dark_subtext hover:text-primary dark:hover:text-Dark_primary font-medium text-sm transition-colors">
                             <ReceiptText size={20} /> <span className="hidden lg:inline">ออร์เดอร์</span>
                         </Link>
+
                         <Link href="/cart" className="hidden md:flex items-center gap-2 text-subtext dark:text-Dark_subtext hover:text-primary dark:hover:text-Dark_primary font-medium text-sm transition-colors relative mr-2">
                             <ShoppingCart size={20} /> <span className="hidden lg:inline">ตะกร้า</span>
                             {totalItems > 0 && (
