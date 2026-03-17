@@ -1,6 +1,6 @@
 import React from 'react';
 import { PrismaClient } from '@prisma/client';
-import { DollarSign, ShoppingBag, Utensils, TrendingUp, Clock, AlertCircle } from 'lucide-react';
+import { DollarSign, ShoppingBag, TrendingUp, Clock, AlertCircle, XCircle, Receipt } from 'lucide-react';
 import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -27,13 +27,18 @@ const DashboardOverviewPage = async () => {
         orderBy: { createdAt: 'desc' }
     });
 
-    const totalMenusCount = await prisma.menu.count({
-        where: { restaurantId: restaurant.id }
-    });
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    const totalRevenue = orders
+    const todaysOrders = orders.filter(order => new Date(order.createdAt) >= today);
+
+    const todayRevenue = todaysOrders
         .filter(order => order.status === 'DELIVERED')
         .reduce((sum, order) => sum + order.totalAmount, 0);
+
+    const todayTotalOrders = todaysOrders.length;
+
+    const todayCanceled = todaysOrders.filter(order => order.status === 'CANCELLED').length;
 
     const activeOrders = orders.filter(order => order.status === 'PENDING' || order.status === 'PREPARING');
 
@@ -74,26 +79,38 @@ const DashboardOverviewPage = async () => {
                 <div className="absolute right-20 -bottom-10 size-32 bg-white/20 rounded-full blur-xl pointer-events-none"></div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
 
                 <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4">
                     <div className="size-14 rounded-full bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-500 flex items-center justify-center shrink-0">
                         <DollarSign size={28} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500 dark:text-zinc-400">ยอดขายรวม (บาท)</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-zinc-400">ยอดขายวันนี้</p>
                         <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">
-                            ฿{totalRevenue.toLocaleString()}
+                            ฿{todayRevenue.toLocaleString()}
                         </h2>
                     </div>
                 </div>
 
                 <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4">
                     <div className="size-14 rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-500 flex items-center justify-center shrink-0">
+                        <Receipt size={28} strokeWidth={2.5} />
+                    </div>
+                    <div>
+                        <p className="text-sm font-medium text-gray-500 dark:text-zinc-400">ออร์เดอร์วันนี้</p>
+                        <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">
+                            {todayTotalOrders}
+                        </h2>
+                    </div>
+                </div>
+
+                <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4">
+                    <div className="size-14 rounded-full bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-500 flex items-center justify-center shrink-0">
                         <ShoppingBag size={28} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500 dark:text-zinc-400">ค้างจัดส่ง (ออร์เดอร์)</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-zinc-400">ค้างจัดส่ง</p>
                         <div className="flex items-center gap-2 mt-1">
                             <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">
                                 {activeOrders.length}
@@ -108,13 +125,13 @@ const DashboardOverviewPage = async () => {
                 </div>
 
                 <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4">
-                    <div className="size-14 rounded-full bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-500 flex items-center justify-center shrink-0">
-                        <Utensils size={28} strokeWidth={2.5} />
+                    <div className="size-14 rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-500 flex items-center justify-center shrink-0">
+                        <XCircle size={28} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-500 dark:text-zinc-400">เมนูที่เปิดขาย (รายการ)</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-zinc-400">ยกเลิกวันนี้</p>
                         <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">
-                            {totalMenusCount}
+                            {todayCanceled}
                         </h2>
                     </div>
                 </div>

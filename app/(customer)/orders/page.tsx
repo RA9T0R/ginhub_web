@@ -42,7 +42,7 @@ const OrdersPage = async ({ searchParams }: { searchParams: Promise<{ tab?: stri
     });
 
     return (
-        <div className="max-w-3xl mx-auto space-y-6 pb-6 mt-4">
+        <div className="max-w-7xl mx-auto space-y-6 pb-6 mt-4">
             <div>
                 <h1 className="text-2xl font-extrabold text-Text dark:text-Dark_Text">รายการสั่งซื้อของฉัน 🧾</h1>
             </div>

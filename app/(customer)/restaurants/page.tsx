@@ -3,8 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import PromoBanner from '@/components/customer/PromoBanner';
 import CategorySlider from '@/components/customer/CategorySlider';
 import RestaurantCard from '@/components/customer/RestaurantCard';
-import { SearchX } from 'lucide-react';
 import { getServerSession } from 'next-auth';
+import { SearchX } from 'lucide-react';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();

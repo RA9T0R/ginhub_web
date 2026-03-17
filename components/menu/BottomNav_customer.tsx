@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ReceiptText, ShoppingCart, Heart } from 'lucide-react';
+import { Home, Heart, ReceiptText, ShoppingCart, User } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 
 const BottomNav_customer = () => {
@@ -14,6 +14,7 @@ const BottomNav_customer = () => {
         { name: 'รายการโปรด', path: '/favorites', icon: Heart },
         { name: 'ออร์เดอร์', path: '/orders', icon: ReceiptText },
         { name: 'ตะกร้า', path: '/cart', icon: ShoppingCart },
+        { name: 'โปรไฟล์', path: '/profile', icon: User },
     ];
 
     return (

@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import RiderLogoutButton from '@/components/rider/RiderLogoutButton';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Wallet, ClockFading } from 'lucide-react';
+import {Home, Wallet, ClockFading, User} from 'lucide-react';
 
 const Navbar_rider = () => {
     const { data: session } = useSession();
@@ -16,6 +16,7 @@ const Navbar_rider = () => {
         { name: 'หน้าหลัก', path: '/rider', icon: Home },
         { name: 'รายได้', path: '/rider/wallet', icon: Wallet },
         { name: 'ประวัติ', path: '/rider/history', icon: ClockFading },
+        { name: 'โปรไฟล์', path: '/rider/profile', icon: User },
     ];
 
     return (

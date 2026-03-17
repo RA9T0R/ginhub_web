@@ -4,11 +4,17 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Star, Clock, MapPin, ChevronLeft, Info } from 'lucide-react';
 import MenuCard from '@/components/customer/MenuCard';
+import FavoriteButton from "@/components/customer/FavoriteButton";
+
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
 
 const RestaurantDetailPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
+
+    const session = await getServerSession(authOptions);
 
     const restaurant = await prisma.restaurant.findUnique({
         where: { id: id },
@@ -21,6 +27,18 @@ const RestaurantDetailPage = async ({ params }: { params: Promise<{ id: string }
         notFound();
     }
 
+    let isFavorited = false;
+    if (session && session.user.role === 'CUSTOMER') {
+        const customer = await prisma.customer.findUnique({
+            where: { userId: session.user.id },
+            include: { favoriteRestaurants: { select: { id: true } } }
+        });
+
+        if (customer) {
+            isFavorited = customer.favoriteRestaurants.some(r => r.id === restaurant.id);
+        }
+    }
+
     return (
         <div className="flex flex-col gap-6 pb-6">
             <div className="relative h-48 md:h-64 w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-sm">
@@ -29,22 +47,30 @@ const RestaurantDetailPage = async ({ params }: { params: Promise<{ id: string }
                     alt={restaurant.name}
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
 
-                {/* ปุ่มย้อนกลับ */}
-                <Link href="/restaurants" className="absolute top-4 left-4 bg-white/20 backdrop-blur-md text-white p-2 rounded-full hover:bg-white/40 transition-colors">
+                <Link href="/restaurants" className="absolute top-4 left-4 bg-white/20 backdrop-blur-md text-white p-2 rounded-full hover:bg-white/40 transition-colors z-10">
                     <ChevronLeft size={24} />
                 </Link>
+
+                <div className="absolute top-4 right-4 z-10">
+                    <FavoriteButton
+                        restaurantId={restaurant.id}
+                        initialIsFavorited={isFavorited}
+                    />
+                </div>
             </div>
 
             <div className="relative -mt-16 md:-mt-20 mx-4 md:mx-8 bg-BG_light dark:bg-Dark_BG_light rounded-2xl p-5 md:p-6 shadow-md border border-gray-100 dark:border-zinc-800 z-10">
                 <div className="flex justify-between items-start">
-                    <h1 className="text-2xl md:text-3xl font-extrabold text-Text dark:text-Dark_Text">
+                    <h1 className="text-2xl md:text-3xl font-extrabold text-Text dark:text-Dark_Text pr-4">
                         {restaurant.name}
                     </h1>
-                    <div className="flex flex-col items-center bg-orange-50 dark:bg-orange-500/10 px-3 py-1.5 rounded-xl">
+                    <div className="flex flex-col items-center bg-orange-50 dark:bg-orange-500/10 px-3 py-1.5 rounded-xl shrink-0">
                         <Star size={18} className="text-secondary dark:text-Dark_secondary fill-secondary dark:fill-Dark_secondary mb-0.5" />
-                        <span className="text-sm font-bold text-primary dark:text-Dark_primary">4.8</span>
+                        <span className="text-sm font-bold text-primary dark:text-Dark_primary">
+                            {restaurant.rating ? restaurant.rating.toFixed(1) : '0.0'}
+                        </span>
                     </div>
                 </div>
 

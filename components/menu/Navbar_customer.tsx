@@ -113,9 +113,14 @@ const Navbar_customer = ({ onLoginClick }: { onLoginClick: () => void }) => {
                                 <div className="size-10 rounded-full bg-gray-200 dark:bg-zinc-800 animate-pulse"></div>
                             ) : session ? (
                                 <div className="flex items-center gap-3">
-                                    <span className="hidden md:block text-sm font-bold text-Text dark:text-Dark_Text">
-                                        {session.user?.name}
-                                    </span>
+                                    <Link href="/profile" className="hidden md:flex items-center gap-2 hover:opacity-80 transition-opacity">
+                                        <div className="size-8 rounded-full bg-orange-100 dark:bg-orange-500/20 text-primary dark:text-Dark_primary flex items-center justify-center font-bold">
+                                            {session.user?.name?.charAt(0)}
+                                        </div>
+                                        <span className="text-sm font-bold text-Text dark:text-Dark_Text">
+                                            {session.user?.name}
+                                        </span>
+                                    </Link>
                                     <button onClick={() => signOut({ callbackUrl: '/' })} className="size-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 transition-colors shrink-0" title="ออกจากระบบ">
                                         <LogOut size={18} />
                                     </button>
