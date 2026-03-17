@@ -47,7 +47,7 @@ const RiderOrderCard = ({ order }: RiderOrderCardProps) => {
 
                 <div className="flex gap-4">
                     <div className="size-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0 z-10 border-4 border-white dark:border-zinc-900">
-                        <Store size={14} />
+                        <Store size={14} suppressHydrationWarning />
                     </div>
                     <div className="flex-1 pb-4">
                         <p className="text-xs font-bold text-orange-500 uppercase tracking-wider mb-1">รับอาหารที่</p>
@@ -58,7 +58,7 @@ const RiderOrderCard = ({ order }: RiderOrderCardProps) => {
 
                 <div className="flex gap-4">
                     <div className="size-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 z-10 border-4 border-white dark:border-zinc-900">
-                        <MapPin size={14} />
+                        <MapPin size={14} suppressHydrationWarning/>
                     </div>
                     <div className="flex-1">
                         <p className="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">จัดส่งให้</p>
