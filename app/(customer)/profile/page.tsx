@@ -8,6 +8,7 @@ import { Heart, MapPin, HelpCircle, Settings, Gift, ChevronRight, User } from 'l
 import LogoutButton from '@/components/LogoutButton';
 import AddressButton from '@/components/customer/AddressButton';
 import ComingSoonWrapper from '@/components/customer/ComingSoonWrapper';
+import GiftModal from '@/components/customer/GiftModal';
 
 const prisma = new PrismaClient();
 
@@ -31,7 +32,7 @@ const ProfilePage = async () => {
                 </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-between bg-BG_light dark:bg-Dark_BG_light p-6 md:p-8 rounded-2xl shadow-sm">
+            <div className="flex flex-col md:flex-row items-center justify-between bg-BG_light dark:bg-Dark_BG_light gap-14 p-6 md:p-8 rounded-2xl shadow-sm">
                 <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-center">
                     <div className="size-14 shrink-0bg-primary/10 dark:bg-Dark_primary/10 border border-primary/20 dark:border-Dark_primary/20 rounded-full flex items-center justify-center text-3xl font-black text-primary dark:text-Dark_primary">
                         {session.user.name?.charAt(0)}
@@ -47,15 +48,9 @@ const ProfilePage = async () => {
                     </div>
                 </div>
 
-                <button className="w-full md:w-auto flex items-center justify-center shadow-xl shadow-subtext dark:shadow-Dark_subtext gap-3 bg-secondary/10 dark:bg-Dark_secondary/10 hover:bg-secondary/20 dark:hover:bg-Dark_secondary/20 px-6 py-4 rounded-xl transition-all group">
-                    <Gift size={24} className="text-secondary dark:text-Dark_secondary group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300" />
-                    <span className="text-sm font-bold uppercase tracking-widest text-Text dark:text-Dark_Text group-hover:text-secondary dark:group-hover:text-Dark_secondary transition-colors">
-                        คูปองของฉัน
-                    </span>
-                </button>
+                <GiftModal />
             </div>
 
-            {/* ✅ Menu Grid: ลบ Border ออก ใช้ Hover เพื่อเปลี่ยนสีพื้นหลังให้ดูมีมิติแทน */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 <Link href="/favorites" className="flex items-center gap-4 p-5 bg-BG_light dark:bg-Dark_BG_light rounded-2xl hover:bg-gray-50 dark:hover:bg-Dark_BG_dark transition-colors duration-300 group">
@@ -100,7 +95,6 @@ const ProfilePage = async () => {
                 </ComingSoonWrapper>
             </div>
 
-            {/* Logout Section */}
             <div className="w-full mt-2">
                 <LogoutButton />
             </div>

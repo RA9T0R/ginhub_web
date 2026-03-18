@@ -22,9 +22,11 @@ enum OrderStatus {
   CANCELLED
 }
 
-// ----------------------------------------------------
-// 1. Core User Table (ใช้สำหรับ Login และข้อมูลพื้นฐานเท่านั้น)
-// ----------------------------------------------------
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
 model User {
   id       String @id @default(cuid())
   email    String @unique
@@ -32,41 +34,35 @@ model User {
   name     String
   role     Role   @default(CUSTOMER)
 
-  // ความสัมพันธ์ 1-to-1 ไปยัง Profile ต่างๆ
-  customerProfile Customer? // ถ้าเป็นลูกค้า จะมีข้อมูลในตารางนี้
-  riderProfile    DeliveryPersonnel? // ถ้าเป็นไรเดอร์ จะมีข้อมูลในตารางนี้
-  restaurants     Restaurant[] // ถ้าเป็นร้านอาหาร จะเป็นเจ้าของร้านได้หลายร้าน
+  customerProfile Customer?
+  riderProfile    DeliveryPersonnel?
+  restaurants     Restaurant[]
 
   createdAt DateTime @default(now())
 }
 
-// ----------------------------------------------------
-// 2. Customer Table (ข้อมูลเฉพาะของลูกค้า ตรงตาม ER Diagram)
-// ----------------------------------------------------
 model Customer {
   id          String    @id @default(cuid())
   phone       String?
   address     String?
-  dateOfBirth DateTime? // อิงจาก ER Diagram
+  dateOfBirth DateTime?
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   orders              Order[]
   favoriteRestaurants Restaurant[] @relation("CustomerFavorites")
+  Coupon              Coupon[]
 
   createdAt DateTime @default(now())
 }
 
-// ----------------------------------------------------
-// 3. Delivery Personnel Table (ข้อมูลเฉพาะของไรเดอร์ ตรงตาม ER Diagram)
-// ----------------------------------------------------
 model DeliveryPersonnel {
   id               String    @id @default(cuid())
   phone            String?
-  licensePlate     String? // ป้ายทะเบียนรถ
-  identificationNo String? // เลขบัตรประชาชน (อิงจาก ER Diagram)
-  dateOfBirth      DateTime? // อิงจาก ER Diagram
+  licensePlate     String?
+  identificationNo String?
+  dateOfBirth      DateTime?
 
   driverScore    Float @default(100.0)
   acceptanceRate Float @default(100.0)
@@ -80,9 +76,6 @@ model DeliveryPersonnel {
   createdAt DateTime @default(now())
 }
 
-// ----------------------------------------------------
-// 4. Restaurant Table (ตรงตาม ER Diagram)
-// ----------------------------------------------------
 model Restaurant {
   id          String  @id @default(cuid())
   name        String
@@ -116,26 +109,25 @@ model Menu {
   orderItems OrderItem[]
 }
 
-// ----------------------------------------------------
-// 5. Order & OrderItem Table
-// ----------------------------------------------------
 model Order {
-  id          String      @id @default(cuid())
+  id          String @id @default(cuid())
   totalAmount Float
-  deliveryFee Float       @default(15.0)
+  deliveryFee Float  @default(15.0)
+
+  discountAmount Float   @default(0.0)
+  couponId       String? @unique
+  coupon         Coupon? @relation(fields: [couponId], references: [id])
+
   status      OrderStatus @default(PENDING)
   orderRating Int?
 
-  // ออร์เดอร์นี้เป็นของลูกค้าคนไหน (เปลี่ยนมาผูกกับ Customer แทน User)
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
 
-  // ออร์เดอร์นี้สั่งจากร้านไหน
   restaurantId   String
   restaurantName String
   restaurant     Restaurant @relation(fields: [restaurantId], references: [id])
 
-  // ออร์เดอร์นี้ใครเป็นคนส่ง (เปลี่ยนมาผูกกับ DeliveryPersonnel แทน User)
   riderId String?
   rider   DeliveryPersonnel? @relation(fields: [riderId], references: [id])
 
@@ -155,4 +147,21 @@ model OrderItem {
 
   menuId String
   menu   Menu   @relation(fields: [menuId], references: [id])
+}
+
+model Coupon {
+  id            String       @id @default(cuid())
+  code          String
+  description   String
+  discountType  DiscountType @default(FIXED)
+  discountValue Float
+  isUsed        Boolean      @default(false)
+  expiresAt     DateTime?
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  order Order?
+
+  createdAt DateTime @default(now())
 }
