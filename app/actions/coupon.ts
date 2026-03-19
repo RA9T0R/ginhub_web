@@ -109,3 +109,30 @@ export const getAvailableCoupons = async () => {
         return [];
     }
 };
+
+export const checkHasClaimedToday = async () => {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session || session.user.role !== 'CUSTOMER') return false;
+
+        const customer = await prisma.customer.findUnique({
+            where: { userId: session.user.id }
+        });
+
+        if (!customer) return false;
+
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const alreadyClaimedToday = await prisma.coupon.findFirst({
+            where: {
+                customerId: customer.id,
+                createdAt: { gte: startOfDay }
+            }
+        });
+
+        return !!alreadyClaimedToday;
+    } catch (error) {
+        return false;
+    }
+};

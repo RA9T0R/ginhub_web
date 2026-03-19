@@ -8,7 +8,6 @@ import { Heart, MapPin, HelpCircle, Settings, Gift, ChevronRight, User } from 'l
 import LogoutButton from '@/components/LogoutButton';
 import AddressButton from '@/components/customer/AddressButton';
 import ComingSoonWrapper from '@/components/customer/ComingSoonWrapper';
-import GiftModal from '@/components/customer/GiftModal';
 
 const prisma = new PrismaClient();
 
@@ -21,7 +20,7 @@ const ProfilePage = async () => {
     });
 
     return (
-        <div className="max-w-7xl mx-auto space-y-6 pb-6 mt-4 px-4 md:px-6 animate-in fade-in">
+        <div className="max-w-7xl mx-auto space-y-6 pb-6 mt-4">
             <div className="flex items-center gap-3 mb-6 border-b border-gray-200 dark:border-Dark_BG_light pb-4">
                 <User size={32} className="text-Text dark:text-Dark_Text" />
                 <div>
@@ -34,11 +33,11 @@ const ProfilePage = async () => {
 
             <div className="flex flex-col md:flex-row items-center justify-between bg-BG_light dark:bg-Dark_BG_light gap-14 p-6 md:p-8 rounded-2xl shadow-sm">
                 <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-center">
-                    <div className="size-14 shrink-0bg-primary/10 dark:bg-Dark_primary/10 border border-primary/20 dark:border-Dark_primary/20 rounded-full flex items-center justify-center text-3xl font-black text-primary dark:text-Dark_primary">
+                    <div className="size-14 shrink-0 bg-primary/10 dark:bg-Dark_primary/10 border border-primary/20 dark:border-Dark_primary/20 rounded-full flex items-center justify-center text-3xl font-black text-primary dark:text-Dark_primary">
                         {session.user.name?.charAt(0)}
                     </div>
 
-                    <div className="text-left md:text-center">
+                    <div className="text-center md:text-left">
                         <h2 className="text-2xl md:text-3xl font-bold text-Text dark:text-Dark_Text truncate">
                             {session.user.name}
                         </h2>
@@ -48,7 +47,15 @@ const ProfilePage = async () => {
                     </div>
                 </div>
 
-                <GiftModal />
+                <Link
+                    href="/profile/coupons"
+                    className="w-full md:w-auto flex items-center justify-center shadow-lg shadow-subtext/10 dark:shadow-Dark_subtext/10 gap-3 bg-secondary/10 dark:bg-Dark_secondary/10 hover:bg-secondary/20 dark:hover:bg-Dark_secondary/20 px-6 py-4 rounded-xl transition-all group"
+                >
+                    <Gift size={24} className="text-secondary dark:text-Dark_secondary group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300" />
+                    <span className="text-sm font-bold uppercase tracking-widest text-Text dark:text-Dark_Text group-hover:text-secondary dark:group-hover:text-Dark_secondary transition-colors">
+                        คูปองของฉัน
+                    </span>
+                </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
