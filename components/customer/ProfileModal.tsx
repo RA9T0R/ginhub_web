@@ -11,7 +11,7 @@ interface ProfileModalProps {
     onProfileUpdated: () => void;
 }
 
-export default function ProfileModal({ isOpen, onClose, onProfileUpdated }: ProfileModalProps) {
+const ProfileModal = ({ isOpen, onClose, onProfileUpdated }: ProfileModalProps) => {
     const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
@@ -97,3 +97,5 @@ export default function ProfileModal({ isOpen, onClose, onProfileUpdated }: Prof
         </div>
     );
 }
+
+export default ProfileModal

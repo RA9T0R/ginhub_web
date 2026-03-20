@@ -22,7 +22,7 @@ const RiderDashboardPage = async () => {
     const orders = await prisma.order.findMany({
         where: { riderId: user.riderProfile.id },
         include: {
-            customer: true, // จะดึงข้อมูลจากตาราง Customer
+            customer: true,
             items: { include: { menu: true } }
         },
         orderBy: [{ status: 'asc' }, { createdAt: 'desc' }]

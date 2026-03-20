@@ -71,7 +71,7 @@ const GiftModal = ({ hasClaimedToday = false }: GiftModalProps) => {
             ) : (
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="w-full flex items-center justify-between p-4 md:p-5 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 rounded-2xl text-white group"
+                    className="cursor-pointer w-full flex items-center justify-between p-4 md:p-5 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 rounded-2xl text-white group"
                 >
                     <div className="flex items-center gap-3 md:gap-4">
                         <div className="bg-white/20 p-2.5 rounded-full shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-transform">
@@ -81,9 +81,6 @@ const GiftModal = ({ hasClaimedToday = false }: GiftModalProps) => {
                             <h3 className="font-bold text-sm md:text-base text-white">เปิดกล่องลุ้นคูปองประจำวัน! 🎉</h3>
                             <p className="text-xs md:text-sm text-orange-50 mt-0.5">คุณมีสิทธิ์ลุ้นรับส่วนลดสุดคุ้ม 1 สิทธิ์ต่อวัน</p>
                         </div>
-                    </div>
-                    <div className="hidden sm:flex bg-white text-orange-600 font-bold px-5 py-2.5 rounded-xl text-sm group-hover:scale-105 transition-transform shadow-sm shrink-0">
-                        เปิดกล่องเลย
                     </div>
                 </button>
             )}
@@ -97,42 +94,66 @@ const GiftModal = ({ hasClaimedToday = false }: GiftModalProps) => {
                     <div className="fixed inset-0 overflow-y-auto">
                         <div className="flex min-h-full items-center justify-center p-4 text-center">
                             <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
-                                <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-3xl bg-BG_light dark:bg-Dark_BG_light p-6 shadow-2xl transition-all border border-gray-100 dark:border-zinc-800">
+                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-3xl bg-BG_light dark:bg-Dark_BG_light p-6 md:p-8 shadow-2xl transition-all border border-gray-100 dark:border-zinc-800">
+
                                     <Dialog.Title as="h3" className="text-center font-black text-Text dark:text-Dark_Text text-xl">
                                         ลุ้นรับคูปองของขวัญ ✨
                                     </Dialog.Title>
-                                    <button onClick={closeModal} className="absolute top-4 right-4 text-subtext dark:text-Dark_subtext hover:bg-gray-100 dark:hover:bg-Dark_BG_dark p-1 rounded-full"><X size={20}/></button>
-                                    <div className="mt-8 mb-6 text-center">
+
+                                    <button onClick={closeModal} className="absolute top-4 right-4 text-subtext dark:text-Dark_subtext hover:bg-gray-100 dark:hover:bg-Dark_BG_dark p-2 rounded-full transition-colors">
+                                        <X size={20}/>
+                                    </button>
+
+                                    <div className="mt-8 mb-4 text-center">
+
                                         {status === 'IDLE' && (
-                                            <>
-                                                <div className="text-8xl mb-8 animate-pulse">🎁</div>
-                                                <p className="text-subtext dark:text-Dark_subtext mb-6">คุณมีสิทธิ์รับคูปองประจำวัน! ลองเปิดกล่องของขวัญดูสิ?</p>
-                                                <button onClick={handleOpenGiftBox} disabled={loading} className="w-full bg-secondary hover:bg-secondary/90 text-Text dark:text-Dark_Text font-extrabold py-3.5 rounded-2xl transition-all shadow-md active:scale-95 text-lg uppercase tracking-wider">
+                                            <div className="animate-in zoom-in-95 duration-300">
+                                                <div className="text-[80px] leading-none mb-6 animate-pulse">🎁</div>
+                                                <p className="text-subtext dark:text-Dark_subtext mb-8 text-sm md:text-base">
+                                                    คุณมีสิทธิ์รับคูปองประจำวัน! <br/> ลองเปิดกล่องของขวัญดูสิ?
+                                                </p>
+                                                <button onClick={handleOpenGiftBox} disabled={loading} className="cursor-pointer w-full bg-secondary hover:bg-secondary/90 text-Text dark:text-Dark_Text font-extrabold py-3.5 rounded-2xl transition-all shadow-md active:scale-95 text-lg uppercase tracking-wider">
                                                     เปิดกล่องของขวัญ!
                                                 </button>
-                                            </>
+                                            </div>
                                         )}
+
                                         {status === 'OPENING' && (
                                             <div className="py-12 flex flex-col items-center">
-                                                <div className="text-8xl mb-6 relative">
+                                                <div className="text-[80px] leading-none mb-6 relative">
                                                     🎁
                                                     <span className="absolute -right-4 -top-4 text-4xl rotate-12">🌟</span>
                                                     <span className="absolute -left-4 top-4 text-4xl -rotate-12 animate-pulse">✨</span>
                                                 </div>
-                                                <p className="text-lg font-bold text-secondary dark:text-Dark_secondary animate-pulse uppercase tracking-wider">กำลังเปิดกล่องลุ้นโชค...</p>
+                                                <p className="text-lg font-bold text-secondary dark:text-Dark_secondary animate-pulse uppercase tracking-wider">
+                                                    กำลังเปิดกล่องลุ้นโชค...
+                                                </p>
                                             </div>
                                         )}
+
                                         {status === 'GOTCHA' && claimedCoupon && (
-                                            <div className="animate-in fade-in">
-                                                <div className="text-4xl mb-3 relative inline-block">
-                                                    Gotcha! You get a coupon
-                                                    <span className="absolute -left-6 top-0 text-5xl rotate-12 animate-bounce">🎁</span>
-                                                    <span className="absolute -right-6 top-0 text-5xl -rotate-12 animate-bounce">🎁</span>
+                                            <div className="animate-in zoom-in-95 duration-500">
+                                                <div className="flex justify-center items-center gap-3 mb-2">
+                                                    <span className="text-4xl animate-bounce">🎁</span>
+                                                    <h4 className="text-3xl font-black text-secondary dark:text-Dark_secondary">ยินดีด้วย!</h4>
+                                                    <span className="text-4xl animate-bounce" style={{ animationDelay: '0.2s' }}>🎁</span>
                                                 </div>
-                                                <div className="text-6xl mb-8">🎉🏆🎉</div>
-                                                <CouponCard coupon={claimedCoupon} />
-                                                <p className="text-xs text-subtext dark:text-Dark_subtext mt-6">คูปองนี้ถูกเก็บในกระเป๋าของคุณแล้ว! <br/> สามารถเลือกใช้ตอนสั่งอาหารในหน้าตะกร้า (Cart) ได้ทันที</p>
-                                                <button onClick={closeModal} className="w-full mt-6 bg-gray-900 dark:bg-white text-white dark:text-black font-bold py-3 rounded-xl hover:scale-105 transition-transform">ขอบคุณครับ!</button>
+                                                <p className="text-lg font-bold text-Text dark:text-Dark_Text mb-8">
+                                                    คุณได้รับคูปองส่วนลดใหม่ 🎉
+                                                </p>
+
+                                                <div className="px-2">
+                                                    <CouponCard coupon={claimedCoupon} />
+                                                </div>
+
+                                                <p className="text-sm text-subtext dark:text-Dark_subtext mt-8 leading-relaxed">
+                                                    คูปองนี้ถูกเก็บใน <b>กระเป๋าคูปอง</b> ของคุณแล้ว!<br/>
+                                                    สามารถนำไปใช้ตอนสั่งอาหารในหน้าตะกร้า (Cart) ได้ทันที
+                                                </p>
+
+                                                <button onClick={closeModal} className="w-full mt-6 bg-gray-900 dark:bg-white text-white dark:text-black font-bold py-3.5 rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-md">
+                                                    ขอบคุณครับ! เก็บเข้ากระเป๋าเลย
+                                                </button>
                                             </div>
                                         )}
                                     </div>

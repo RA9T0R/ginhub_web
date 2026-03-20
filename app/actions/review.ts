@@ -46,7 +46,7 @@ export const submitOrderReview = async (
 
             const totalRiderStars = riderOrders.reduce((sum, o) => sum + (o.orderRating || 0), 0);
             const averageRiderStars = totalRiderStars / riderOrders.length;
-            const newDriverScore = (averageRiderStars / 5) * 100; // แปลงเป็นเปอร์เซ็นต์
+            const newDriverScore = (averageRiderStars / 5) * 100;
 
             await prisma.deliveryPersonnel.update({
                 where: { id: riderId },

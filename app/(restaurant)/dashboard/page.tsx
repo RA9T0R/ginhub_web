@@ -1,11 +1,12 @@
 import React from 'react';
 import { PrismaClient } from '@prisma/client';
-import { DollarSign, ShoppingBag, TrendingUp, Clock, AlertCircle, XCircle, Receipt } from 'lucide-react';
+import { DollarSign, ShoppingBag, TrendingUp, Clock, AlertCircle, XCircle, Receipt, BarChart3, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import EditRestaurantModal from '@/components/restaurant/EditRestaurantModal';
+import RevenueChart from '@/components/restaurant/RevenueChart';
 
 const prisma = new PrismaClient();
 
@@ -18,7 +19,7 @@ const DashboardOverviewPage = async () => {
     });
 
     if (!restaurant) {
-        return <div className="p-8 text-center text-red-500">ไม่พบข้อมูลร้านอาหาร</div>;
+        return <div className="p-8 text-center text-red-500 font-bold">ไม่พบข้อมูลร้านอาหาร</div>;
     }
 
     const orders = await prisma.order.findMany({
@@ -37,9 +38,7 @@ const DashboardOverviewPage = async () => {
         .reduce((sum, order) => sum + order.totalAmount, 0);
 
     const todayTotalOrders = todaysOrders.length;
-
     const todayCanceled = todaysOrders.filter(order => order.status === 'CANCELLED').length;
-
     const activeOrders = orders.filter(order => order.status === 'PENDING' || order.status === 'PREPARING');
 
     const itemSales: Record<string, { name: string, count: number, revenue: number, imageUrl: string }> = {};
@@ -62,9 +61,29 @@ const DashboardOverviewPage = async () => {
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
 
-    return (
-        <div className="w-full flex flex-col gap-6 xl:max-w-9/10 mx-auto pb-12">
+    const last7DaysData = Array.from({ length: 7 }).map((_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        const dateStr = d.toLocaleDateString('th-TH', { day: '2-digit', month: 'short' });
 
+        const dayRevenue = orders
+            .filter(o => o.status === 'DELIVERED')
+            .filter(o => {
+                const orderDate = new Date(o.createdAt);
+                return orderDate.getDate() === d.getDate() &&
+                    orderDate.getMonth() === d.getMonth() &&
+                    orderDate.getFullYear() === d.getFullYear();
+            })
+            .reduce((sum, o) => sum + o.totalAmount, 0);
+
+        console.log(dateStr)
+        console.log(dayRevenue)
+
+        return { name: dateStr, revenue: dayRevenue };
+    });
+
+    return (
+        <div className="w-full flex flex-col gap-6 xl:max-w-9/10 mx-auto pb-12 animate-in fade-in duration-500">
             <div className="flex justify-between items-center bg-gradient-to-r from-orange-500 to-orange-400 p-6 md:p-8 rounded-2xl text-white shadow-md relative overflow-hidden">
                 <div className="relative z-10 flex-1">
                     <h1 className="text-2xl md:text-3xl font-extrabold mb-2">สวัสดี, {restaurant.name} 👋</h1>
@@ -80,8 +99,7 @@ const DashboardOverviewPage = async () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-
-                <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4">
+                <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
                     <div className="size-14 rounded-full bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-500 flex items-center justify-center shrink-0">
                         <DollarSign size={28} strokeWidth={2.5} />
                     </div>
@@ -93,7 +111,7 @@ const DashboardOverviewPage = async () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4">
+                <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
                     <div className="size-14 rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-500 flex items-center justify-center shrink-0">
                         <Receipt size={28} strokeWidth={2.5} />
                     </div>
@@ -105,7 +123,7 @@ const DashboardOverviewPage = async () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4">
+                <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
                     <div className="size-14 rounded-full bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-500 flex items-center justify-center shrink-0">
                         <ShoppingBag size={28} strokeWidth={2.5} />
                     </div>
@@ -124,7 +142,7 @@ const DashboardOverviewPage = async () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4">
+                <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
                     <div className="size-14 rounded-full bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-500 flex items-center justify-center shrink-0">
                         <XCircle size={28} strokeWidth={2.5} />
                     </div>
@@ -136,6 +154,15 @@ const DashboardOverviewPage = async () => {
                     </div>
                 </div>
 
+            </div>
+
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm p-6 w-full">
+                <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                        <BarChart3 className="text-orange-500" size={20} /> ภาพรวมรายได้ 7 วันย้อนหลัง
+                    </h3>
+                </div>
+                <RevenueChart data={last7DaysData} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -12,10 +12,17 @@ const RiderHistoryPage = async () => {
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'DELIVERY') redirect('/');
 
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        include: { riderProfile: true }
+    });
+
+    if (!user || !user.riderProfile) return redirect('/');
+
     const historyOrders = await prisma.order.findMany({
         where: {
-            riderId: session.user.id,
-            status: { in: ['DELIVERED', 'CANCELLED'] } // เอาเฉพาะงานที่จบไปแล้ว
+            riderId: user.riderProfile.id,
+            status: { in: ['DELIVERED', 'CANCELLED'] }
         },
         include: { customer: true, items: { include: { menu: true } } },
         orderBy: { createdAt: 'desc' }

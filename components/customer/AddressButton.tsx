@@ -8,7 +8,7 @@ interface AddressButtonProps {
     currentAddress: string | null;
 }
 
-export default function AddressButton({ currentAddress }: AddressButtonProps) {
+const AddressButton = ({ currentAddress }: AddressButtonProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [displayAddress, setDisplayAddress] = useState(currentAddress || 'ยังไม่ได้ระบุที่อยู่');
 
@@ -38,3 +38,5 @@ export default function AddressButton({ currentAddress }: AddressButtonProps) {
         </>
     );
 }
+
+export default AddressButton
