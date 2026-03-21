@@ -1,17 +1,19 @@
-import React from 'react';
+'use client';
+
+import React, { Suspense } from 'react';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Ticket, ChevronLeft } from 'lucide-react';
+import { Ticket, ChevronLeft, Loader2 } from 'lucide-react';
 import CouponCard from '@/components/customer/CouponCard';
 import GiftModal from '@/components/customer/GiftModal';
 import { checkHasClaimedToday } from '@/app/actions/coupon';
 
 const prisma = new PrismaClient();
 
-const MyCouponsPage = async ({ searchParams }: { searchParams: Promise<{ tab?: string }> }) => {
+const CouponsContent = async ({ searchParams }: { searchParams: Promise<{ tab?: string }> }) => {
     const { tab } = await searchParams;
     const currentTab = tab || 'available';
 
@@ -100,4 +102,17 @@ const MyCouponsPage = async ({ searchParams }: { searchParams: Promise<{ tab?: s
     );
 };
 
-export default MyCouponsPage;
+const MyCouponsPage = ({ searchParams }: { searchParams: Promise<{ tab?: string }> }) => {
+    return (
+        <Suspense fallback={
+            <div className="flex flex-col justify-center items-center py-32 text-orange-500 gap-4">
+                <Loader2 className="animate-spin" size={48} />
+                <p className="font-bold animate-pulse">กำลังโหลดกระเป๋าคูปอง...</p>
+            </div>
+        }>
+            <CouponsContent searchParams={searchParams} />
+        </Suspense>
+    );
+}
+
+export default MyCouponsPage
