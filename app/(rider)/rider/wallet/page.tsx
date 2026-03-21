@@ -5,6 +5,8 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import { Wallet, ArrowDownToLine, ArrowUpRight, History } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 const RiderWalletPage = async () => {

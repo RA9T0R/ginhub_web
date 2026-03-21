@@ -7,6 +7,8 @@ import { getServerSession } from 'next-auth';
 import { SearchX } from 'lucide-react';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 const RestaurantsPage = async ({ searchParams }: { searchParams: Promise<{ category?: string, search?: string }> }) => {

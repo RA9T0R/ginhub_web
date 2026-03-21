@@ -9,6 +9,8 @@ import FavoriteButton from "@/components/customer/FavoriteButton";
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 const RestaurantDetailPage = async ({ params }: { params: Promise<{ id: string }> }) => {

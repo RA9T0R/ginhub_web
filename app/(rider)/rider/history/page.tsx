@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation';
 import RiderOrderCard from '@/components/rider/RiderOrderCard';
 import { ClockFading } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 const RiderHistoryPage = async () => {

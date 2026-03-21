@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation';
 import { Star, TrendingUp, ShieldCheck, Phone, Mail, MapPin, CarFront } from 'lucide-react';
 import RiderLogoutButton from '@/components/rider/RiderLogoutButton';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 const RiderProfilePage = async () => {

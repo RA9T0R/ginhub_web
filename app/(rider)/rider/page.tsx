@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation';
 import RiderOrderCard from '@/components/rider/RiderOrderCard';
 import { Bike, Wallet, CheckCircle2 } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 const RiderDashboardPage = async () => {
