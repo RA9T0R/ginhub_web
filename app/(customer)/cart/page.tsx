@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useTransition } from 'react';
+import React, { useEffect, useState, useTransition, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/useCartStore';
@@ -10,7 +10,7 @@ import { getUserProfile } from '@/app/actions/user';
 import { getAvailableCoupons } from '@/app/actions/coupon';
 import toast from 'react-hot-toast';
 
-const CartPage = () => {
+const CartContent = () => {
     const { items, totalPrice, addItem, decreaseItem, removeItem, clearCart } = useCartStore();
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -253,4 +253,17 @@ const CartPage = () => {
     );
 };
 
-export default CartPage;
+const CartPage = () => {
+    return (
+        <Suspense fallback={
+            <div className="min-h-[60vh] flex flex-col items-center justify-center text-orange-500 gap-3">
+                <Loader2 className="animate-spin" size={36} />
+                <p className="font-bold animate-pulse text-sm">กำลังจัดเตรียมตะกร้าสินค้า...</p>
+            </div>
+        }>
+            <CartContent />
+        </Suspense>
+    );
+}
+
+export default CartPage
