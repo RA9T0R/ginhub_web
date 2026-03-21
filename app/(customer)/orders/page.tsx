@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation';
 import ClientOrderCard from "@/components/customer/ClientOrderCard";
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 const OrdersPage = async ({ searchParams }: { searchParams: Promise<{ tab?: string }> }) => {

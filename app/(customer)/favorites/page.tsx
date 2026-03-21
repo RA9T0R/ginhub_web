@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation';
 import { Heart } from 'lucide-react';
 import RestaurantCard from '@/components/customer/RestaurantCard';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 const FavoritesPage = async () => {
