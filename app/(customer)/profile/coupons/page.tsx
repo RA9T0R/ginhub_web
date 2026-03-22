@@ -9,8 +9,6 @@ import CouponCard from '@/components/customer/CouponCard';
 import GiftModal from '@/components/customer/GiftModal';
 import { checkHasClaimedToday } from '@/app/actions/coupon';
 
-export const dynamic = 'force-dynamic';
-
 const prisma = new PrismaClient();
 
 const MyCouponsPage = async ({ searchParams }: { searchParams: Promise<{ tab?: string }> }) => {

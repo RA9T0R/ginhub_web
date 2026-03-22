@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 enum Role {
@@ -64,9 +64,10 @@ model DeliveryPersonnel {
   identificationNo String?
   dateOfBirth      DateTime?
 
-  driverScore    Float @default(100.0)
-  acceptanceRate Float @default(100.0)
-  balance        Float @default(0.0)
+  driverScore    Float   @default(100.0)
+  acceptanceRate Float   @default(100.0)
+  balance        Float   @default(0.0)
+  isOnline       Boolean @default(true)
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -83,6 +84,7 @@ model Restaurant {
   description String?
   imageUrl    String?
   rating      Float   @default(0.0)
+  isOnline    Boolean @default(true)
 
   ownerId String
   owner   User   @relation(fields: [ownerId], references: [id])

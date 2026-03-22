@@ -8,8 +8,6 @@ import { redirect } from 'next/navigation';
 import EditRestaurantModal from '@/components/restaurant/EditRestaurantModal';
 import RevenueChart from '@/components/restaurant/RevenueChart';
 
-export const dynamic = 'force-dynamic';
-
 const prisma = new PrismaClient();
 
 const DashboardOverviewPage = async () => {

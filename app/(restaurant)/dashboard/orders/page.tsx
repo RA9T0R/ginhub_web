@@ -7,8 +7,6 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
-export const dynamic = 'force-dynamic';
-
 const prisma = new PrismaClient();
 
 const DashboardOrdersPage = async ({ searchParams }: { searchParams: Promise<{ tab?: string }> }) => {

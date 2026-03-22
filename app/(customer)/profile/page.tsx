@@ -9,8 +9,6 @@ import LogoutButton from '@/components/LogoutButton';
 import AddressButton from '@/components/customer/AddressButton';
 import ComingSoonWrapper from '@/components/customer/ComingSoonWrapper';
 
-export const dynamic = 'force-dynamic';
-
 const prisma = new PrismaClient();
 
 const ProfilePage = async () => {
