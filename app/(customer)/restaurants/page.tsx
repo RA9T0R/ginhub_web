@@ -30,7 +30,8 @@ const RestaurantsPage = async ({ searchParams }: { searchParams: Promise<{ categ
 
     const restaurants = await prisma.restaurant.findMany({
         where: whereCondition,
-        include: { menus: true }
+        include: { menus: true },
+        orderBy: { isOnline: 'desc' }
     });
 
     let favIds: string[] = [];

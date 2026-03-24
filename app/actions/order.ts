@@ -45,12 +45,17 @@ export const checkoutOrders = async (cartItems: any[], couponId?: string | null)
             }
         }
 
-        const availableRiders = await prisma.deliveryPersonnel.findMany();
-        let assignedRiderId = null;
-        if (availableRiders.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableRiders.length);
-            assignedRiderId = availableRiders[randomIndex].id;
+        const availableRiders = await prisma.deliveryPersonnel.findMany({
+            where: { isOnline: true }
+        });
+        if (availableRiders.length === 0) {
+            return {
+                success: false,
+                message: 'ขออภัยครับ ขณะนี้ไม่มีไรเดอร์พร้อมให้บริการ กรุณาลองใหม่ในภายหลัง 🛵'
+            };
         }
+        const randomIndex = Math.floor(Math.random() * availableRiders.length);
+        const assignedRiderId = availableRiders[randomIndex].id;
 
         type GroupedData = Record<string, { restaurantName: string, items: any[], totalAmount: number }>;
         const groupedByRestaurant = cartItems.reduce((acc: GroupedData, item) => {

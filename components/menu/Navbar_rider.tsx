@@ -1,16 +1,35 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ThemeToggle from "@/components/ThemeToggle";
 import { useSession } from 'next-auth/react';
 import RiderLogoutButton from '@/components/rider/RiderLogoutButton';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {Home, Wallet, ClockFading, User} from 'lucide-react';
+import { getUserOnlineStatus, toggleUserOnlineStatus } from '@/app/actions/userStatus';
+import toast from 'react-hot-toast';
 
 const Navbar_rider = () => {
     const { data: session } = useSession();
-    const [isOnline, setIsOnline] = useState(true);
+    const [isOnline, setIsOnline] = useState(false);
     const pathname = usePathname();
+
+    useEffect(() => {
+        getUserOnlineStatus().then(status => setIsOnline(status));
+    }, []);
+
+    const handleToggleOnline = async () => {
+        const newStatus = !isOnline;
+        setIsOnline(newStatus);
+
+        const result = await toggleUserOnlineStatus(newStatus);
+        if (result.success) {
+            toast.success(newStatus ? 'ออนไลน์ พร้อมรับงาน! 🛵' : 'ออฟไลน์ พักผ่อนได้! 😴');
+        } else {
+            setIsOnline(!newStatus);
+            toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
+        }
+    };
 
     const navItems = [
         { name: 'หน้าหลัก', path: '/rider', icon: Home },
@@ -54,15 +73,11 @@ const Navbar_rider = () => {
                                 type="checkbox"
                                 className="sr-only peer"
                                 checked={isOnline}
-                                onChange={() => setIsOnline(!isOnline)}
+                                onChange={handleToggleOnline}
                             />
                             <div className="w-8 h-4 bg-gray-300 dark:bg-zinc-600
                                 peer-focus:outline-none rounded-full peer
-                                /* Light Mode Checked */
-                                peer-checked:bg-orange-500
-                                /* Dark Mode Checked - Added this */
-                                dark:peer-checked:bg-orange-500
-                                /* Toggle Knob Logic */
+                                peer-checked:bg-orange-500 dark:peer-checked:bg-orange-500
                                 after:content-[''] after:absolute after:top-[2px] after:left-[2px]
                                 after:bg-white after:border-gray-300 after:border after:rounded-full
                                 after:h-3 after:w-3 after:transition-all

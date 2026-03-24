@@ -2,7 +2,7 @@ import React from 'react';
 import { PrismaClient } from '@prisma/client';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Star, Clock, MapPin, ChevronLeft, Info } from 'lucide-react';
+import { Star, Clock, MapPin, ChevronLeft, Info, Store } from 'lucide-react';
 import MenuCard from '@/components/customer/MenuCard';
 import FavoriteButton from "@/components/customer/FavoriteButton";
 
@@ -25,6 +25,28 @@ const RestaurantDetailPage = async ({ params }: { params: Promise<{ id: string }
 
     if (!restaurant) {
         notFound();
+    }
+
+    if (!restaurant.isOnline) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 animate-in fade-in duration-500">
+                <div className="size-24 bg-red-50 dark:bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-6">
+                    <Store size={48} strokeWidth={1.5} />
+                </div>
+                <h2 className="text-2xl font-bold text-Text dark:text-Dark_Text mb-2">
+                    ร้าน {restaurant.name} ปิดให้บริการชั่วคราว
+                </h2>
+                <p className="text-subtext dark:text-Dark_subtext mb-8 max-w-sm">
+                    ขออภัยครับ ขณะนี้ร้านปิดรับออร์เดอร์ กรุณากลับมาใหม่ในภายหลัง หรือลองเลือกร้านอาหารเด็ดๆ ร้านอื่นแทนนะครับ
+                </p>
+                <Link
+                    href="/restaurants"
+                    className="flex items-center gap-2 bg-primary dark:bg-Dark_primary text-white font-bold py-3 px-8 rounded-xl hover:bg-orange-600 transition-colors shadow-sm"
+                >
+                    <ChevronLeft size={20} /> กลับไปหาร้านอื่น
+                </Link>
+            </div>
+        );
     }
 
     let isFavorited = false;

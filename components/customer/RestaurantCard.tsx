@@ -10,25 +10,36 @@ interface RestaurantProps {
         description: string | null;
         imageUrl: string | null;
         rating?: number;
+        isOnline?: boolean;
         menus?: any[];
     };
     isFavorited?: boolean;
 }
 
 const RestaurantCard = ({ restaurant, isFavorited = false }: RestaurantProps) => {
+    const isClosed = restaurant.isOnline === false;
+
     return (
         <Link
             href={`/restaurants/${restaurant.id}`}
-            className="group flex flex-row md:flex-col bg-BG_light dark:bg-Dark_BG_light rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-zinc-800 hover:shadow-md transition-all duration-300 h-full relative"
+            className={`group flex flex-row md:flex-col bg-BG_light dark:bg-Dark_BG_light rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-zinc-800 hover:shadow-md transition-all duration-300 h-full relative ${isClosed ? 'opacity-70' : ''}`}
         >
             <div className="relative w-[120px] md:w-full min-h-[120px] md:h-48 bg-gray-200 dark:bg-zinc-800 shrink-0">
                 <img
                     src={restaurant.imageUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80'}
                     alt={restaurant.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className={`w-full h-full object-cover transition-transform duration-500 ${isClosed ? 'grayscale' : 'group-hover:scale-105'}`}
                 />
 
-                <div className="absolute top-2 right-2 z-10">
+                {isClosed && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
+                        <span className="bg-red-500 text-white text-[10px] md:text-sm font-bold px-3 py-1.5 rounded-full shadow-lg border border-red-400">
+                            ปิดรับออร์เดอร์
+                        </span>
+                    </div>
+                )}
+
+                <div className="absolute top-2 right-2 z-20">
                     <FavoriteButton
                         restaurantId={restaurant.id}
                         initialIsFavorited={isFavorited}

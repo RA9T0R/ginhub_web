@@ -1,10 +1,10 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ThemeToggle from "@/components/ThemeToggle";
 import { LogOut, Menu, User as UserIcon, ChevronDown, Store } from 'lucide-react';
-import Image from "next/image";
 import { useSession, signOut } from 'next-auth/react';
-
+import { getUserOnlineStatus, toggleUserOnlineStatus } from '@/app/actions/userStatus';
+import toast from 'react-hot-toast';
 
 interface NavbarBoardProps {
     onMobileMenuClick: () => void;
@@ -13,8 +13,25 @@ interface NavbarBoardProps {
 
 const Navbar_restaurant = ({ onMobileMenuClick, userRole = "Restaurant" }: NavbarBoardProps) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+    const [isOnline, setIsOnline] = useState(true); // ร้านค้าเริ่มต้นเป็น true
     const { data: session } = useSession();
+
+    useEffect(() => {
+        getUserOnlineStatus().then(status => setIsOnline(status));
+    }, []);
+
+    const handleToggleOnline = async () => {
+        const newStatus = !isOnline;
+        setIsOnline(newStatus);
+
+        const result = await toggleUserOnlineStatus(newStatus);
+        if (result.success) {
+            toast.success(newStatus ? 'เปิดร้านแล้ว ลูกค้าสั่งอาหารได้เลย! 🧑‍🍳' : 'ปิดร้านชั่วคราวแล้วครับ 😴');
+        } else {
+            setIsOnline(!newStatus);
+            toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
+        }
+    };
 
     return (
         <header className="h-16 w-full dark:border-zinc-800 flex justify-between items-center mb-2 rounded-t-lg z-30">
@@ -33,6 +50,28 @@ const Navbar_restaurant = ({ onMobileMenuClick, userRole = "Restaurant" }: Navba
             </div>
 
             <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 bg-gray-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-gray-200 dark:border-zinc-700">
+                    <span className={`text-xs font-bold ${isOnline ? 'text-green-600 dark:text-green-400' : 'text-gray-500'}`}>
+                        {isOnline ? 'เปิดร้าน' : 'ปิดร้าน'}
+                    </span>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={isOnline}
+                            onChange={handleToggleOnline}
+                        />
+                        <div className="w-8 h-4 bg-gray-300 dark:bg-zinc-600
+                            peer-focus:outline-none rounded-full peer
+                            peer-checked:bg-green-500 dark:peer-checked:bg-green-500
+                            after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                            after:bg-white after:border-gray-300 after:border after:rounded-full
+                            after:h-3 after:w-3 after:transition-all
+                            peer-checked:after:translate-x-4">
+                        </div>
+                    </label>
+                </div>
+
                 <ThemeToggle />
 
                 <div className="relative">
