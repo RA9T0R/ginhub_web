@@ -47,7 +47,7 @@ const OrdersPage = async ({ searchParams }: { searchParams: Promise<{ tab?: stri
                 <h1 className="text-2xl font-extrabold text-Text dark:text-Dark_Text">รายการสั่งซื้อของฉัน 🧾</h1>
             </div>
 
-            <div className="flex border-b border-gray-200 dark:border-zinc-800">
+            <div className="flex border-b border-subtext dark:border-Dark_subtext">
                 <Link
                     href="/orders?tab=ongoing"
                     className={`flex-1 text-center py-3 text-sm font-bold border-b-2 transition-colors ${currentTab === 'ongoing' ? 'border-primary text-primary dark:border-Dark_primary dark:text-Dark_primary' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'}`}

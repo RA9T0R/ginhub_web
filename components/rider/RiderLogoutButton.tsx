@@ -6,7 +6,7 @@ const RiderLogoutButton = () => {
     return (
         <button
             onClick={() => signOut({ callbackUrl: '/' })}
-            className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white"
+            className="p-2 bg-Main_BG dark:bg-Dark_Main_BG text-Text dark:text-Dark_Text rounded-full transition-colors"
             title="ออกจากระบบ"
         >
             <LogOut size={20} />

@@ -149,10 +149,10 @@ const MenuManager = ({ restaurantId, restaurantName, menus }: MenuManagerProps) 
                                 <h4 className="font-bold text-Text dark:text-Dark_Text line-clamp-1 pr-2">{menu.name}</h4>
 
                                 <div className="flex items-center gap-2 shrink-0">
-                                    <button onClick={() => handleOpenEdit(menu)} disabled={isPending} className="text-gray-400 hover:text-blue-500 transition-colors bg-gray-50 dark:bg-zinc-800 p-1.5 rounded-md">
+                                    <button onClick={() => handleOpenEdit(menu)} disabled={isPending} className="cursor-pointer text-subtext hover:text-blue-500 transition-colors bg-gray-50 dark:bg-zinc-800 p-1.5 rounded-md">
                                         <Edit size={14} />
                                     </button>
-                                    <button onClick={() => handleDelete(menu.id)} disabled={isPending} className="text-gray-400 hover:text-red-500 transition-colors bg-gray-50 dark:bg-zinc-800 p-1.5 rounded-md">
+                                    <button onClick={() => handleDelete(menu.id)} disabled={isPending} className="cursor-pointer text-subtext hover:text-red-500 transition-colors bg-gray-50 dark:bg-zinc-800 p-1.5 rounded-md">
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
@@ -166,7 +166,14 @@ const MenuManager = ({ restaurantId, restaurantName, menus }: MenuManagerProps) 
                                 </span>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" className="sr-only peer" checked={menu.isAvailable} onChange={() => handleToggle(menu.id, menu.isAvailable)} disabled={isPending} />
-                                    <div className="w-8 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-green-500"></div>
+                                    <div className="w-8 h-4 bg-gray-300 dark:bg-zinc-600
+                                    peer-focus:outline-none rounded-full peer
+                                    peer-checked:bg-orange-500 dark:peer-checked:bg-orange-500
+                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                                    after:bg-white after:border-gray-300 after:border after:rounded-full
+                                    after:h-3 after:w-3 after:transition-all
+                                    peer-checked:after:translate-x-4">
+                                    </div>
                                 </label>
                             </div>
                         </div>

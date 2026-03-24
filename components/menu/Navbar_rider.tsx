@@ -88,7 +88,6 @@ const Navbar_rider = () => {
                     <ThemeToggle />
                     <RiderLogoutButton />
                 </div>
-
             </div>
         </header>
     );

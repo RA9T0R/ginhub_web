@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tag } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 const PromoBanner = () => {
     return (
@@ -10,13 +10,13 @@ const PromoBanner = () => {
             <div className="relative z-10 flex justify-between items-center">
                 <div>
                     <span className="bg-white/20 text-white text-xs font-bold px-2 py-1 rounded-md mb-2 inline-block">
-                        โปรโมชันพิเศษ!
+                        หิวรอบดึก?
                     </span>
-                    <h2 className="text-xl font-extrabold mb-1">ลดเดือดรับสิ้นเดือน 🔥</h2>
-                    <p className="text-sm opacity-90">ลดสูงสุด 50% เมื่อสั่งครบ 200 บาท</p>
+                    <h2 className="text-xl font-extrabold mb-1">ร้านเด็ดยังเปิดอยู่ 🌙</h2>
+                    <p className="text-sm opacity-90">สั่งเลยตอนนี้ ไรเดอร์พร้อมสแตนด์บาย</p>
                 </div>
-                <div className="size-12 bg-white text-primary dark:text-Dark_primary rounded-full flex items-center justify-center shadow-lg transform rotate-12">
-                    <Tag size={24} className="fill-current" />
+                <div className="size-12 bg-white text-primary dark:text-Dark_primary rounded-full flex items-center justify-center shadow-lg transform -rotate-12">
+                    <Clock size={24} className="stroke-current" />
                 </div>
             </div>
         </div>
